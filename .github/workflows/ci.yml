@@ -1,0 +1,39 @@
+name: Sprint 9 UI tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Pull Chrome for Selenoid
+        run: docker pull selenoid/chrome:128.0
+
+      - name: Run tests in Docker Compose
+        run: docker compose up --build --exit-code-from tests
+
+      - name: Show Selenoid logs on failure
+        if: ${{ failure() }}
+        run: docker compose logs --no-color selenoid
+
+      - name: Upload Allure results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-results
+          path: allure-results/
+
+      - name: Stop Docker Compose
+        if: ${{ always() }}
+        run: docker compose down
