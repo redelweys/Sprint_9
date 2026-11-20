@@ -9,7 +9,7 @@ from urls import LOGIN_URL
 class LoginPage(BasePage):
     @allure.step("Открыть страницу входа")
     def open(self):
-        self.driver.get(LOGIN_URL)
+        self.open_url(LOGIN_URL)
 
     @allure.step("Перейти к регистрации по ссылке в меню")
     def click_signup(self):

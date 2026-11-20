@@ -9,7 +9,7 @@ from urls import RECIPES_URL
 class RecipesPage(BasePage):
     @allure.step("Открыть страницу рецептов")
     def open(self):
-        self.driver.get(RECIPES_URL)
+        self.open_url(RECIPES_URL)
 
     @allure.step("Нажать «Войти» в меню")
     def click_login(self):
