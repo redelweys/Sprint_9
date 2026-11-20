@@ -1,0 +1,27 @@
+services:
+  selenoid:
+    image: aerokube/selenoid:1.11.3
+    environment:
+      DOCKER_API_VERSION: "1.44"
+    command: ["-container-network", "sprint9_selenoid", "-service-startup-timeout", "60s"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./browsers.json:/etc/selenoid/browsers.json:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4444/ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  tests:
+    build: .
+    depends_on:
+      selenoid:
+        condition: service_healthy
+    command: ["--selenoid-uri=http://selenoid:4444/wd/hub"]
+    volumes:
+      - ./allure-results:/app/allure-results
+
+networks:
+  default:
+    name: sprint9_selenoid
